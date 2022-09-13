@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  postgresql:
+    container_name: postgresql_dev
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_USER: '${POSTGRES_USER:-root}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD:-admin}'
+      POSTGRES_DB: '${POSTGRES_DB:-nestjs}'
+    ports:
+      - ${POSTGRESQL_PORT:-5432}:5432
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+
+  pgadmin:
+    container_name: pgadmin4_dev
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - '8082:80'
+    depends_on:
+      - postgresql
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  postgresql_data:
+  pgadmin_data:
