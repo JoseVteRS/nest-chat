@@ -1,16 +1,20 @@
+import { Chat } from 'src/modules/chats/chat.entity';
+import { Message } from 'src/modules/messages/message.entity';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('text')
   first_name: string;
@@ -23,6 +27,15 @@ export class User extends BaseEntity {
 
   @Column('text')
   passwordHash: string;
+
+  @OneToMany(() => Message, (message: Message) => message.user)
+  public message: Message;
+
+  @OneToMany(() => Chat, (chat: Chat) => chat.created_by)
+  public createdChats: Chat[];
+
+  @ManyToMany((type) => Chat, (chat: Chat) => chat.users)
+  public chats: Chat[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

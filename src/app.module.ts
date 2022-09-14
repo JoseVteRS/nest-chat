@@ -1,12 +1,17 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './modules/auth/auth.module';
+import { MessagesModule } from './modules/messages/message.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    AuthModule,
+    MessagesModule,
+    ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -18,7 +23,7 @@ import { AppService } from './app.service';
           username: configService.get('POSTGRES_USER'),
           password: configService.get('POSTGRES_PASSWORD'),
           database: configService.get('POSTGRES_DB'),
-          entities: [__dirname + '/../**/*.entity.ts'],
+          entities: [join(__dirname, '**', '*.entity.{ts,js}')],
           migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
           subscribers: [__dirname + '/subscribers/**/*{.ts,.js}'],
           synchronize: true,
